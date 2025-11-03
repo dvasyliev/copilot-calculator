@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 
 export default function useCalculator() {
   const [displayValue, setDisplayValue] = useState<string>("0");
@@ -6,6 +6,8 @@ export default function useCalculator() {
   const [operator, setOperator] = useState<string | null>(null);
   const [waitingForOperand, setWaitingForOperand] = useState<boolean>(false);
   const [history, setHistory] = useState<string | undefined>(undefined);
+  const [message, setMessage] = useState<string | null>(null);
+  const messageTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const inputDigit = useCallback(
     (digit: string) => {
@@ -14,11 +16,22 @@ export default function useCalculator() {
           setWaitingForOperand(false);
           return digit;
         }
+        // Count digits (ignore sign and decimal)
+        const digits = prev.replace(/[^0-9]/g, "");
+        if (digits.length >= 10) {
+          // Show message and block input
+          if (!message) {
+            setMessage("Max 10 digits");
+            if (messageTimeout.current) clearTimeout(messageTimeout.current);
+            messageTimeout.current = setTimeout(() => setMessage(null), 3000);
+          }
+          return prev;
+        }
         if (prev === "0") return digit;
         return prev + digit;
       });
     },
-    [waitingForOperand]
+    [waitingForOperand, message]
   );
 
   const inputDot = useCallback(() => {
@@ -31,6 +44,8 @@ export default function useCalculator() {
     setOperator(null);
     setWaitingForOperand(false);
     setHistory(undefined);
+    setMessage(null);
+    if (messageTimeout.current) clearTimeout(messageTimeout.current);
   }, []);
 
   const backspace = useCallback(() => {
@@ -108,6 +123,7 @@ export default function useCalculator() {
   return {
     displayValue,
     history,
+    message,
     handleButton,
   };
 }

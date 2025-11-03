@@ -10,7 +10,11 @@ export default function App() {
 
   return (
     <div className="app-card">
-      <Display value={calculator.displayValue} history={calculator.history} />
+      <Display
+        value={calculator.displayValue}
+        history={calculator.history}
+        message={calculator.message}
+      />
       <Keypad buttons={BUTTONS} onButtonClick={calculator.handleButton} />
     </div>
   );

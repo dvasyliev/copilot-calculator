@@ -1,12 +1,16 @@
 export function formatNumber(value: string) {
-  // minimal formatting: trim leading zeros but preserve '0' and decimal
+  // Only format valid numbers (not empty, not just '-')
   if (!value) return "0";
   if (value === "-") return value;
   const neg = value.startsWith("-");
-  const v = neg ? value.slice(1) : value;
-  if (v.startsWith("0") && !v.startsWith("0.")) {
-    const parsed = String(parseFloat(v));
-    return (neg ? "-" : "") + (parsed === "NaN" ? "0" : parsed);
+  let [intPart, decPart] = (neg ? value.slice(1) : value).split(".");
+  // Remove leading zeros except for '0' or '0.xxx'
+  if (intPart.length > 1 && intPart.startsWith("0")) {
+    intPart = String(parseInt(intPart, 10));
   }
-  return value;
+  // Add spaces as thousands separator
+  intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  let formatted = neg ? "-" + intPart : intPart;
+  if (decPart !== undefined) formatted += "." + decPart;
+  return formatted;
 }
