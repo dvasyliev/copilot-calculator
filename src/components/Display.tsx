@@ -8,12 +8,17 @@ interface Props {
 
 const Display: React.FC<Props> = ({ value, history, message }) => {
   return (
-    <div className="display">
-      <div className="history">{history ?? ""}</div>
-      <div className="value">{formatNumber(value)}</div>
+    <div className="display" role="textbox" aria-readonly="true">
+      <div className="history" role="text">
+        {history ?? ""}
+      </div>
+      <div className="value" role="text">
+        {formatNumber(value)}
+      </div>
       {message && (
         <div
           className="display-message"
+          role="alert"
           style={{
             color: "#ff8a00",
             fontSize: 14,

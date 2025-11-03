@@ -1,5 +1,4 @@
 import React from "react";
-import Card from "./components/Card";
 import Display from "./components/Display";
 import Keypad from "./components/Keypad";
 import { BUTTONS } from "./constants/buttons";
